@@ -588,18 +588,39 @@ document
     event.preventDefault();
     const form = event.target;
     const formData = new FormData(form);
+
+    // Clear previous messages
+    const messageContainer = document.getElementById("form-message");
+    messageContainer.textContent = "";
+    messageContainer.className = "";
+    messageContainer.style.display = "block";
+
+    // Show loading message
+    messageContainer.textContent = "Sending...";
+    messageContainer.className = "form-message info";
+
     fetch(form.action, {
       method: form.method,
       body: formData,
       headers: { Accept: "application/json" },
-    }).then((response) => {
-      if (response.ok) {
-        alert("Thank you for your message! We will get back to you soon.");
-        form.reset();
-      } else {
-        alert("There was a problem with your submission. Please try again.");
-      }
-    });
+    })
+      .then((response) => {
+        if (response.ok) {
+          messageContainer.textContent =
+            "Thank you for your message! We will get back to you soon.";
+          messageContainer.className = "form-message success";
+          form.reset();
+        } else {
+          messageContainer.textContent =
+            "There was a problem with your submission. Please try again.";
+          messageContainer.className = "form-message error";
+        }
+      })
+      .catch((error) => {
+        messageContainer.textContent =
+          "There was a problem connecting to the server. Please try again.";
+        messageContainer.className = "form-message error";
+      });
   });
 
 window.addEventListener("DOMContentLoaded", () => {
