@@ -518,10 +518,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const brochureForm = document.querySelector('form[name="brochure-download"]');
   const emailInput = document.getElementById("brochure-email");
   const downloadBtn = document.getElementById("download-btn");
+  const emailError = document.getElementById("email-error");
 
-  // Initial state - disable button by default
-  downloadBtn.disabled = true;
-  downloadBtn.style.cursor = "not-allowed";
+  // // Initial state - disable button by default
+  // downloadBtn.disabled = true;
+  // downloadBtn.style.cursor = "not-allowed";
 
   // Enable/disable button based on email input
   emailInput.addEventListener("input", function () {
@@ -530,44 +531,54 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Change cursor style based on button state
     downloadBtn.style.cursor = hasValue ? "pointer" : "not-allowed";
+
+    // Hide error message when user starts typing
+    if (hasValue) {
+      emailError.style.display = "none";
+    }
   });
 
   // Handle form submission
   brochureForm.addEventListener("submit", function (e) {
     e.preventDefault();
 
-    // Only proceed if email is valid
-    if (emailInput.validity.valid) {
-      // Collect form data
-      const formData = new FormData(brochureForm);
+    // Validate email before proceeding
+    const email = emailInput.value.trim();
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      // Submit form to Netlify
-      fetch("/", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(formData).toString(),
-      })
-        .then(() => {
-          // Initiate brochure download
-          const downloadLink = document.createElement("a");
-          downloadLink.href = "twentytwoampdf.pdf"; // Replace with actual brochure file path
-          downloadLink.download = "TwentyTwoAm_Brochure.pdf"; // Name of downloaded file
-          document.body.appendChild(downloadLink);
-          downloadLink.click();
-          document.body.removeChild(downloadLink);
-
-          // Reset form and button state
-          emailInput.value = "";
-          downloadBtn.disabled = true;
-          downloadBtn.style.cursor = "not-allowed";
-        })
-        .catch((error) => {
-          console.error("Error submitting form:", error);
-          alert(
-            "There was an error downloading the brochure. Please try again."
-          );
-        });
+    if (email === "" || !emailPattern.test(email)) {
+      // Show error message if email is invalid
+      emailError.style.display = "block";
+      return;
     }
+
+    // Collect form data
+    const formData = new FormData(brochureForm);
+
+    // Submit form to Netlify
+    fetch("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams(formData).toString(),
+    })
+      .then(() => {
+        // Initiate brochure download
+        const downloadLink = document.createElement("a");
+        downloadLink.href = "twentytwoampdf.pdf"; // Replace with actual brochure file path
+        downloadLink.download = "TwentyTwoAm_Brochure.pdf"; // Name of downloaded file
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+
+        // Reset form and button state
+        emailInput.value = "";
+        downloadBtn.disabled = true;
+        downloadBtn.style.cursor = "not-allowed";
+      })
+      .catch((error) => {
+        console.error("Error submitting form:", error);
+        alert("There was an error downloading the brochure. Please try again.");
+      });
   });
 });
 
