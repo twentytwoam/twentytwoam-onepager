@@ -564,8 +564,8 @@ document.addEventListener("DOMContentLoaded", function () {
       .then(() => {
         // Initiate brochure download
         const downloadLink = document.createElement("a");
-        downloadLink.href = "twentytwoampdf.pdf"; // Replace with actual brochure file path
-        downloadLink.download = "TwentyTwoAm_Brochure.pdf"; // Name of downloaded file
+        downloadLink.href = "Twentytwo_AM_brand_page.pdf"; // Replace with actual brochure file path
+        downloadLink.download = "TwentyTwoAm_brand_page.pdf"; // Name of downloaded file
         document.body.appendChild(downloadLink);
         downloadLink.click();
         document.body.removeChild(downloadLink);
